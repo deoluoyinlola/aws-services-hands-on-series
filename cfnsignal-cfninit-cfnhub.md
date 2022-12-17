@@ -14,12 +14,12 @@ This demo steps through a four step CloudFormation template evolution;
 ## Userdata
 - Step 1; Login into AWS account as IAM User and specify us-east-1 as region.
 
-![Login](Docs/assets/login.png)
+![Login](Docs/cfnsignal-cfninit-cfnhub/login.png)
 
 - Step 2; Apply the 1_userdata.yaml in the CloudFormation from console;
 From console, type Cloudformation > Create Stack > Template is ready > Upload a template file > Choose file > (1_userdata.yaml) > Next > (Give a name) > Next > Next > Submit. After some minutes, it should create similar resources as below;
 
-![Userdata](Docs/assets/usrdata.png)
+![Userdata](Docs/cfnsignal-cfninit-cfnhub/usrdata.png)
 
 - Step 3; Open the IP address;
 From userdata stack, click the resource > Instance logical ID > Click the icon to open the instance console > Select the Instance > Copy Public IPv4 Address > Open in the new tab. 
@@ -34,12 +34,12 @@ I have made two changes to the new config; (1.) CreationPolicy and (2.) From the
 From console, type Cloudformation > Create Stack(with new resources) > Template is ready > Upload a template file > Choose file > (1_userdata with signal.yaml) > Next > (Give a name) > Next > Next > Submit.
 This will take some couple of minutes than the first one.
 
-![With-signal](Docs/assets/with-signal.png)
+![With-signal](Docs/cfnsignal-cfninit-cfnhub/with-signal.png)
 
 - Step 2; Open the IP address;
 From signal stack, click the resource > Instance logical ID > Click the icon to open the instance console > Select the Instance > From Network, copy Public IPv4 Address > Open in the new tab.
 
-![Signal-display](Docs/assets/signal-display.png)
+![Signal-display](Docs/cfnsignal-cfninit-cfnhub/signal-display.png)
 
 - Step 3; Delete the stack;
 From the stack, Delete > Delete stack
@@ -53,14 +53,14 @@ This will take some couple of minutes than the first one.
 - Step 2; Connect to the instance to diagonise it.
 From signal stack, click the resource > Instance logical ID > Click the icon to open the instance console > Right click the Instance > Choose connect > EC2 Instance Connect > Click Connect
 
-![cfn-ec2-connect](Docs/assets/cfn-ec2-connect.png)
+![cfn-ec2-connect](Docs/cfnsignal-cfninit-cfnhub/cfn-ec2-connect.png)
 
 - Step 3; Check and list the log inside the instance;
 ```
 cd /var/log
 ls -la
 ```
-![cfn-log-list](Docs/assets/cfn-log-list.png)
+![cfn-log-list](Docs/cfnsignal-cfninit-cfnhub/cfn-log-list.png)
 
 We can then output, view the content of each file with command cat;
 ```
@@ -68,7 +68,7 @@ sudo cat cloud-init-output.log
 ```
 You will see those command we use at the boostrapping processing here;
 
-![cfn-diagnose](Docs/assets/cfn-diagnose.png)
+![cfn-diagnose](Docs/cfnsignal-cfninit-cfnhub/cfn-diagnose.png)
 
 - Step 3; Delete the stack;
 From the stack, Delete > Delete stack
@@ -88,7 +88,7 @@ The different here, is that cfnhup is configured in addition to the previous set
 cd /var/log
 ls -la
 ```
-![cfnhup-diagnose](Docs/assets/cfnhup-diagnose.png)
+![cfnhup-diagnose](Docs/cfnsignal-cfninit-cfnhub/cfnhup-diagnose.png)
 
 We can then output, view the content of this cfnhup file with command cat;
 ```
@@ -98,7 +98,7 @@ sudo cat cfn-hup.log
 From console, select the Stack > Update > Use current template > Change the message (I am the best!!!!!!) > Next > Next > Submit.
 So, cfnhup detect this change and re-run cfninit.
 
-![cfnhup-new](Docs/assets/cfnhup-new.png)
+![cfnhup-new](Docs/cfnsignal-cfninit-cfnhub/cfnhup-new.png)
 
 - Step 5; Delete the stack;
 From the stack, Delete > Delete stack
