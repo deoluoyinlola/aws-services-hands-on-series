@@ -38,3 +38,52 @@ From the stack, Delete > Delete stack
 - Limitation here is, again Userdata only apply once, it wouldn't still effect any changes even after edit and update. So let explore next option.
 
 ## cfn-init with cfn-signal
+- Using the cfinit feature inside the metadata block of instance resource. This is an alternative way of configuring instance, cfnint defined will be use at the userdata block.
+- Step 1; Apply the 3_cfnint with signal.yaml in the CloudFormation from console;
+From console, type Cloudformation > Create Stack(with new resources) > Template is ready > Upload a template file > Choose file > (3_cfnint with signal.yaml) > Next > (Give a name) > Next > Next > Submit.
+This will take some couple of minutes than the first one.
+- Step 2; Connect to the instance to diagonise it.
+From signal stack, click the resource > Instance logical ID > Click the icon to open the instance console > Right click the Instance > Choose connect > EC2 Instance Connect > Click Connect
+![cfn-ec2-connect](Docs/assets/cfn-ec2-connect.png)
+- Step 3; Check and list the log inside the instance;
+```
+cd /var/log
+ls -la
+```
+![cfn-log-list](Docs/assets/cfn-log-list.png)
+We can then output, view the content of each file with command cat;
+```
+sudo cat cloud-init-output.log
+```
+You will see those command we use at the boostrapping processing here;
+![cfn-diagnose](Docs/assets/cfn-diagnose.png)
+- Step 3; Delete the stack;
+From the stack, Delete > Delete stack
+
+- Limitation here is that it wouldn't update the configuration of the instance if we do update stack and change our parameter values. Let have a look at the last option.
+
+## cfn-init with cfn-signal and cfn-hup
+- Here, we will be using cfn-hup utility to detect changes for the metadata resources. If you check the new config file , there is a congfiuration for cfn-hup in the file, specifying the stack, region and interval of how often it should check for the changes and in the second configuration we define what should happen when an update occurs.
+- Step 1; Apply the 2_userdata.yaml in the CloudFormation from console;
+From console, type Cloudformation > Create Stack(with new resources) > Template is ready > Upload a template file > Choose file > (4_cfninit with cfnsignal and cfnhup.yaml) > Next > (Give a name) > Next > Next > Submit.
+This will take some couple of minutes than the first one.
+- Step 2; Connect to the instance to diagonise it.
+From signal stack, click the resource > Instance logical ID > Click the icon to open the instance console > Right click the Instance > Choose connect > EC2 Instance Connect > Click Connect
+The different here, is that cfnhup is configured in addition to the previous settings.
+- Step 3; Check and list the log inside the instance;
+```
+cd /var/log
+ls -la
+```
+![cfnhup-diagnose](Docs/assets/cfnhup-diagnose.png)
+We can then output, view the content of this cfnhup file with command cat;
+```
+sudo cat cfn-hup.log
+```
+- Step 4; Update the stack; Trying to check the effect of this cfnhup utility by updating the stack from the cloudformation.
+From console, select the Stack > Update > Use current template > Change the message (I am the best!!!!!!) > Next > Next > Submit.
+So, cfnhup detect this change and re-run cfninit.
+![cfnhup-new](Docs/assets/cfnhup-new.png)
+
+- Step 5; Delete the stack;
+From the stack, Delete > Delete stack
