@@ -1,11 +1,12 @@
+!Note that all the files, images and architecture reference are find inside cfnsignal-cfninit-cfnhub dir of Docs dir.;
+![CFCustomResourcesArch.png](Docs/cfnsignal-cfninit-cfnhub/CFCustomResourcesArch.png)
+
 This demo steps through a four step CloudFormation template evolution;
 * [Goals](#goals)
 * [Userdata](#userdata)
 * [Userdata with cfn-signal](#userdata-with-cfn-signal)
 * [cfn-init with cfn-signal](#cfn-init-with-cfn-signal)
 * [cfn-init with cfn-signal and cfn-hup](#cfn-init-with-cfn-signal-and-cfn-hup)
-
-!Note that all the files reference are find inside cfnsignal-cfninit-cfnhub dir of Docs dir.
 
 ## Goals
 - Understand CreationPolicy

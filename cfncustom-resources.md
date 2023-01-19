@@ -1,4 +1,4 @@
-!Note that all the files reference are find inside cfncustom-resources dir of Docs dir. And the architecture for the project as below;
+!Note that all the files, images and architecture reference are find inside cfncustom-resources dir of Docs dir.;
 ![CFCustomResourcesArch.png](Docs/cfncustom-resources/CFCustomResourcesArch.png)
 
 * [Goals](#goals)
