@@ -21,4 +21,5 @@ The following are some of the basic resources helping me to achieve these hands-
 - [aws cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)  - a unified tool to manage your AWS services.
 - [VSCode](https://code.visualstudio.com/) - a source-code editor made by Microsoft with the Electron Framework, for Windows, Linux and macOS.
 - Documentation; aws, eksctl
+- Adrian Cantrill projects
 - Google search
