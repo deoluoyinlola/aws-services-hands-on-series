@@ -36,6 +36,48 @@ You should see the `Animals4life Hall of Fame` load... this is running from the 
 
 ## Establish Private Connectivity Between the environments (VPC Peer)
 ![STAGE2](Docs/database-migration/STAGE2.png)
+- Create a VPC peer between On-Premises and AWS
+Move to the VPC Console
+Click on `Peering Connections` under `Virtual Private Cloud`
+Click `Create Peering Connection`
+for `Peering connection name tag` choose A4L-ON-PREMISES-TO-AWS
+for `VPC (Requester)` choose `onpremVPC`
+for `VPC (Accepter)` choose `awsVPC`
+Scroll down and click `Create Peering Connection`
+...then click `Actions` and then `Accept Request`
+Click `Accept Request`
+
+- Create Routes on the On-premises side
+Move to the route tabes console https://console.aws.amazon.com/vpc/home?region=us-east-1#RouteTables:sort=routeTableId
+Locate the onpremPublicRT route table and select it using the checkbox.
+Click on the Routes Tab.
+You're going to add a route pointing at the AWS side networking, using the VPC Peer.
+Click Edit Routes
+Click Add Route
+For Destination enter 10.16.0.0/16
+Click the Target dropdown & click Peering Connection and select the A4L-ON-PREMISES-TO-AWS then click Save Changes
+The Onpremises network can now route to the AWS Network, but as data transfer requires bi-directional traffic flow, you need to do the same at the other side.
+
+STAGE 2C - Create Routes on the AWS side
+Move to the route tabes console https://console.aws.amazon.com/vpc/home?region=us-east-1#RouteTables:sort=routeTableId
+Locate the awsPublicRT route table and select it using the checkbox.
+Click on the Routes Tab.
+You're going to add a route pointing at the AWS side networking, using the VPC Peer.
+Click Edit Routes
+Click Add Route
+For Destination enter 192.168.10.0/24
+Click the Target dropdown & click Peering Connection and select the A4L-ON-PREMISES-TO-AWS then click Save Changes
+
+Move to the route tabes console https://console.aws.amazon.com/vpc/home?region=us-east-1#RouteTables:sort=routeTableId
+Locate the awsPrivateRT route table and select it using the checkbox.
+Click on the Routes Tab.
+You're going to add a route pointing at the AWS side networking, using the VPC Peer.
+Click Edit Routes
+Click Add Route
+For Destination enter 192.168.10.0/24
+Click the Target dropdown & click Peering Connection and select the A4L-ON-PREMISES-TO-AWS then click Save Changes
+
+At this point I have created the peering connection between the VPCs and the gateway objects within each VPC. Also configured routing from ONPremises -> AWS and vice-versa.
 
 ## Create & Configure the AWS Side infrastructure (App and DB)
 ![STAGE3](Docs/database-migration/STAGE3.png)
