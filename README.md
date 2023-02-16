@@ -23,3 +23,10 @@ The following are some of the basic resources helping me to achieve these hands-
 - Documentation; aws, eksctl
 - Adrian Cantrill projects
 - Google search
+
+
+DBName - a4lwordpress
+DBPassword - cats-dogs-rabbits-chickens
+DBRootPassword - cats-dogs-rabbits-chickens
+DBUser - a4lwordpress
+
