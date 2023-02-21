@@ -20,7 +20,7 @@ This lesson demonstrates how to create an AWS account.
 - For Admin/root user, as the admin user of the said account, under account dropdown select `My Security Credential` > click `Create Access Key` > Copy the Access Key ID and Secret Access Key - Download .csv file
 - For other user, Sign in to the AWS Management Console and open the IAM console at https://console.aws.amazon.com/iam/ . In the navigation pane, choose Users. Choose the name of the intended user, and then choose the Security credentials tab. In the Access keys section, choose Create access key.
 
-## AWS CLI Installation
+## AWS CLI Installation and configure
 - https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
 - How do I quickly check my AWS credentials?
