@@ -6,9 +6,11 @@ In this DEMO lesson;
 * [References](#References)
 * [Create VPC](#Create-VPC)
 * [VPC Subnet](#VPC-Subnet)
+* [Internet Gateway](#Internet-Gateway)
+* [Route Table](#Route-Table)
 
 ## Goals
-In this hands-on I will create an aws VPC for a business.
+In this hands-on I will create an aws VPC for a business, with VPC Subnet, Internet Gateway, Route Tables and Routes, create a bastion host with public IPv4 addressing
 
 ## References
 [AWS-VPC-Option](https://d1.awsstatic.com/whitepapers/aws-amazon-vpc-connectivity-options.pdf)
@@ -51,3 +53,16 @@ Remember to enable auto assign ipv6 on every subnet you create.
 
 ### Manually Set auto assign ipv6
 Select each subnet and click on > Click on `Action` > Choose `Edit Subnet Setting` > Check `Enable auto-assign ipv6 address` > click on `Save`. Repeat the same process for other 11 subnets.
+
+## Internet Gateway
+- Login into the Management AWS account, select N. Virginia region
+- From the find service box, type `VPC` to move to vpc console, click on `Subnets`
+- Configure the web tiers into public subnet; 
+(1.) Attach IGW to VPC, So click on `Internet Gateway` > Click on `Create Internet Gateway` > name it as `a4l-vpc1-igw` > From the next screen, click on `Action` dropdown and choose `Attach to VPC` > Select the right VPC > Click on `Attach Internet Gateway`
+
+## Route Table
+- From the vpc console, click on `Route Tables` > Click on `Create Route Table` > Name it as `a4l-vpc1-rt-web` > Select the right VPC > Click on `Create Route Table`. From the Route table console, select the just created route table > Click on `Subnet Associations` menu > Click on `Edit Subnet Associations` > Then select all the 3 `-web-` subnet > Click on `Save Associations` 
+![vpc](Docs/vpc/sub-ass.png)
+- Add 2 additional route(for IPv4 and IPv6), the default route can not be adjust or remove; From the Route table console, select the just created route table > Click on `Routes` menu > Click on `Edit Route` > Click on `Add Route`, for IPv4 format select 0.0.0.0/0 and internet gateway of a4l-vpc1-igw > Click on `Add Route` again for IPv6 format select ::/0 and internet gateway of a4l-vpc1-igw > Click on `Save Change`
+- Ensure that any resources launch into the web tiers subnets are allocated with public IPv4 addresses; Click on `Subnets` > Select the web tiers one after the other(a,b & c) > from the `Actions` > Choose `Edit Subnets Settings` > check `Enable auto-assign public IPv4 Address` > `Save`
+![vpc](Docs/vpc/sub-assign.png)
