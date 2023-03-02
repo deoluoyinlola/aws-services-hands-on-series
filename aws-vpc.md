@@ -8,9 +8,11 @@ In this DEMO lesson;
 * [VPC Subnet](#VPC-Subnet)
 * [Internet Gateway](#Internet-Gateway)
 * [Route Table](#Route-Table)
+* [Create Bastion](#Create-Bastion)
 
 ## Goals
-In this hands-on I will create an aws VPC for a business, with VPC Subnet, Internet Gateway, Route Tables and Routes, create a bastion host with public IPv4 addressing
+In this hands-on I will create an aws VPC for a business, with VPC Subnet, Internet Gateway, Route Tables and Routes. Once the WEB subnets are public, we create a bastion host with public IPv4 addressing and connect to it to test.
+
 
 ## References
 [AWS-VPC-Option](https://d1.awsstatic.com/whitepapers/aws-amazon-vpc-connectivity-options.pdf)
@@ -55,7 +57,6 @@ Remember to enable auto assign ipv6 on every subnet you create.
 Select each subnet and click on > Click on `Action` > Choose `Edit Subnet Setting` > Check `Enable auto-assign ipv6 address` > click on `Save`. Repeat the same process for other 11 subnets.
 
 ## Internet Gateway
-- Login into the Management AWS account, select N. Virginia region
 - From the find service box, type `VPC` to move to vpc console, click on `Subnets`
 - Configure the web tiers into public subnet; 
 (1.) Attach IGW to VPC, So click on `Internet Gateway` > Click on `Create Internet Gateway` > name it as `a4l-vpc1-igw` > From the next screen, click on `Action` dropdown and choose `Attach to VPC` > Select the right VPC > Click on `Attach Internet Gateway`
@@ -66,3 +67,27 @@ Select each subnet and click on > Click on `Action` > Choose `Edit Subnet Settin
 - Add 2 additional route(for IPv4 and IPv6), the default route can not be adjust or remove; From the Route table console, select the just created route table > Click on `Routes` menu > Click on `Edit Route` > Click on `Add Route`, for IPv4 format select 0.0.0.0/0 and internet gateway of a4l-vpc1-igw > Click on `Add Route` again for IPv6 format select ::/0 and internet gateway of a4l-vpc1-igw > Click on `Save Change`
 - Ensure that any resources launch into the web tiers subnets are allocated with public IPv4 addresses; Click on `Subnets` > Select the web tiers one after the other(a,b & c) > from the `Actions` > Choose `Edit Subnets Settings` > check `Enable auto-assign public IPv4 Address` > `Save`
 ![vpc](Docs/vpc/sub-assign.png)
+
+## Create Bastion
+- From the find service box, type `ec2` to move to ec2 console > Click on`Launch Instance` > Name is as `A4L-BASTION` > Click on `Amazon Linux` > Maintain free tier in the dropdown below > Choose the right `Key-pair name` if not, create new one(A4L, RSA, .pem) > Click on `Edit` > Choose the right VPC, Subnet(sn-web-A) > For `security group name` - A4L-BASTION-SG > Under `Inbound security groups rules` confirm the source are correct > Click on `Launch Instance`
+![vpc](Docs/vpc/ec2.png)
+
+### Connecting to the ec2
+- Select the particular ec2, right click on it and choose `Connect` > From the option `EC2 Instance Connect` is the most easier method, also effective is SSH Client
+![vpc](Docs/vpc/ec2-connect.png)
+or
+![vpc](Docs/vpc/ec2-ssh.png)
+
+### private internet using nat gateway
+- I will be craeting this with cfn(check the Docs directory for the file). After the stack creation, click on `Resources` tab of the stack > Look for A4L of the `Logical ID` and click on the window icon of `Physical ID` to load on another browser tab. 
+![NAT](Docs/vpc/nat1.png)
+- From the next browser tab, try to ping from this instance. Click `Session Manager` > Click `Connect` > enter `ping 1.1.1.1` into the prompt. Note that there is no public connectivity, because the instance not doesn't have public IPv4 address and is not in the subnet of route table that point to the internet gateway.
+![NAT](Docs/vpc/nat2.png)
+
+- Next is to deploy NAT Gateway into the private subnet, which will provide private EC2 instance with connectivity to public IPv4 internet. From the service console search vpc and open new tab > Click `NAT Gateways` > click `Create NAT Gateway` > Supply all required box, name; `a4l-vpc1-natgw-A` choose right subnet, allocate elastic IP > click on `Create NAT Gateway`. Repeat same step for the next 2 NAT Gateway. Futher, check the creation by clicking on Elastic IPs to see the details.
+![NAT](Docs/vpc/nat3.png)
+
+- Configuring the routing. So, the that the private instance can communicate via NAT gateway, right ckick on route table, and open a new tab. Here, I will create a new route table for each of the AZ. 
+Click on `Create Route Table` name; `a4l-vpc1-rt-privateA` and choose right VPC. Repeat the step for the next 2 route table as well, one for eachn AZ.
+- Create a default route within each of these. Select each route table > click on `routes` menu > click `Edit Routes` > Click `Add Routes` > for destination; 0.0.0.0/0 and target; nat gateway that I created > click `Save Changes`. Repeat the step for B and C. 
+- Associate the Subnet, select the route table > click on `Subnet Associations` >  Click `Edit Subnet Associations` > Pick all of the private subnet in the AZ(db, app and reserved) > Click `Save Association`. Repeat the above steps for other AZ of B and C. If I should ping now, I should be able to connect to the public internet.
