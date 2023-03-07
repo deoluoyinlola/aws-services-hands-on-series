@@ -10,6 +10,7 @@ In this DEMO lesson;
 * [Route Table](#Route-Table)
 * [Create Bastion](#Create-Bastion)
 * [VPC Gateway Endpoint](#VPC-Gateway-Endpoint)
+* [VPC Interface Endpoint](#VPC-Interface-Endpoint)
 
 ## Goals
 In this hands-on I will create an aws VPC for a business, with VPC Subnet, Internet Gateway, Route Tables and Routes. Once the WEB subnets are public, we create a bastion host with public IPv4 addressing and connect to it to test.
@@ -109,3 +110,19 @@ From VPC console, > Select `Endpoints` > Click `Create Endpoint` > Supply all re
 
 I can verify this works, by returning to the session manager of the instance and perform some operations; `aws s3 cp s3://bucketname/supersecret.txt supersecret.txt` 
 ![GW-END](Docs/vpc/gw-end-verify.png)
+
+## VPC Interface Endpoint
+- Continue from above steps, but here connecting to SNS service, to send text message. Obviously, it will not work because and need to implement interface endpoint which will allow the communication with SNS service.
+- Create interface endpoint; From VPC console, > Select `Endpoints` > Click `Create Endpoint` > Supply all required name; `PrivateVPCSNS`, category of AWS service, in the service; type sns, check the box next to interface, then choose the right VPC and make sure DNS name is enable, pick all the right subnet and subnet ID(here, I choose app category), note that one can only have one interface in each availablity zone. > Select correct security group > can as well adjust the endpoint policy > Select `Create Endpoint`
+![INTERFACE-END](Docs/vpc/gw-end-interface.png)
+
+- Add Sandbox Destination Phone Number(the second option is to remove sandbox mode); Move to sns console, > Click `Text Message(SMS)` > click `Add Phone Number` without pinpoint, supply phone number and language.
+![INTERFACE-END](Docs/vpc/gw-end-sms.png)
+
+Can also explore origination number option(depending on one's location in the world); from the SNS console, click `Originating Number` > Click `Provision Numbers in Pinpoint` > click on `Request Phone Number` choose the country , pick toll-free, transaction, Next, Request
+
+So, back to the session manager of the instance to send the message with this command;
+for disabled DNS name; `aws sns publish --message "Cats are the best" --phone-number +2347035554522 --region us-east-1 --endpoint-url https://vpce-014a2c41fc74abf6a-u51xifka.sns.us-east-1.vpce.amazonaws.com`
+for enable DNS name; `aws sns publish --message "Cats are the best" --phone-number +2347035554522 --region us-east-1`
+
+![INTERFACE-END](Docs/vpc/confirm.jpeg)
