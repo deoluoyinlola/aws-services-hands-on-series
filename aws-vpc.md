@@ -103,7 +103,9 @@ Click on `Create Route Table` name; `a4l-vpc1-rt-privateA` and choose right VPC.
 - Under `Resources` of the just created stack, and from `Physical ID` column, select bucket link. From the S3 bucket console, click on `Upload` > Click `Add files` to choose the particular file > Select `Upload`
 - Creating and implementing gateway endpoint by connecting to the S3 bucket from the VPC without Internet Gateway; from services box, search `EC2` to move to EC2 console > `Running Instance` this is only internal to AWS, to use it right click and hit `Connect` choose `Session Manager` > to verify this does not have internet connectivity, I can ping it with 1.1.1.1 or with `aws s3 ls` command because is private-only instance and don`t have access to any public space endpoints.
 ![GW-END](Docs/vpc/gw-end-ping.png)
+
 From VPC console, > Select `Endpoints` > Click `Create Endpoint` > Supply all required name; `PrivateVPCS3`, category of AWS service, in the service; select .us.east-1.s3, check the box next to gateway, then choose the right VPC, select the right route table, can as well adjust the endpoint policy > Select `Create Endpoint`
 ![GW-END](Docs/vpc/gw-end-cr8.png)
+
 I can verify this works, by returning to the session manager of the instance and perform some operations; `aws s3 cp s3://bucketname/supersecret.txt supersecret.txt` 
 ![GW-END](Docs/vpc/gw-end-verify.png)
