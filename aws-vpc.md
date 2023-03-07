@@ -11,6 +11,7 @@ In this DEMO lesson;
 * [Create Bastion](#Create-Bastion)
 * [VPC Gateway Endpoint](#VPC-Gateway-Endpoint)
 * [VPC Interface Endpoint](#VPC-Interface-Endpoint)
+* [Egress-Only Internet Gateway](#Egress-Only-Internet-Gateway)
 
 ## Goals
 In this hands-on I will create an aws VPC for a business, with VPC Subnet, Internet Gateway, Route Tables and Routes. Once the WEB subnets are public, we create a bastion host with public IPv4 addressing and connect to it to test.
@@ -126,3 +127,11 @@ for disabled DNS name; `aws sns publish --message "Cats are the best" --phone-nu
 for enable DNS name; `aws sns publish --message "Cats are the best" --phone-number +2347035554522 --region us-east-1`
 
 ![INTERFACE-END](Docs/vpc/confirm.jpeg)
+
+## Egress-Only Internet Gateway
+- Configure egress-only internet gateway; from VPC console, > Select `Egress-Only Internet Gateways` > Click `Create Egress-Only Internet Gateway` > Supply all required box, name; A4LIPv6, Select the right VPC, click on `Create` and it has associate it with the right VPC. 
+- Next is to configure the route table; from the VPC console, click route tables, select the right VPC(one with secret VPC prefix) > click on `routes` > Click `Edit Routes` > Click on `Add Route` > Adjust the destination ::/0(which ref. all IPv6) and target will be egress-only internet gateway > Click `Save Changes`. If I should ping from the instance now, it should work;
+![INTERFACE-END](Docs/vpc/egress-ping.jpeg)
+
+### tidy up the account
+From the VPC console, move to `Endpoint` > select the 2 private endpoint created seperately. Click on Action, choose `Delete VPC endpoint`. Then move to S3 console, pick the right bucket, click on empty, and delete. Move to Egress-only Internet gateway, select the egress gateway created, click on action and choose Delete Egress-Only Internet Gateway and complete the deletion. Finally, move to the cloudformation console, click the stack and delete. Can also tidy up(possible after 24 hours of creation) the SNS console, Select the phone number, Click on `Delete Phone Number` and complete deletion.
