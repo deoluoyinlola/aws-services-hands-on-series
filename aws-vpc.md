@@ -9,6 +9,7 @@ In this DEMO lesson;
 * [Internet Gateway](#Internet-Gateway)
 * [Route Table](#Route-Table)
 * [Create Bastion](#Create-Bastion)
+* [VPC Gateway Endpoint](#VPC-Gateway-Endpoint)
 
 ## Goals
 In this hands-on I will create an aws VPC for a business, with VPC Subnet, Internet Gateway, Route Tables and Routes. Once the WEB subnets are public, we create a bastion host with public IPv4 addressing and connect to it to test.
@@ -91,3 +92,18 @@ or
 Click on `Create Route Table` name; `a4l-vpc1-rt-privateA` and choose right VPC. Repeat the step for the next 2 route table as well, one for eachn AZ.
 - Create a default route within each of these. Select each route table > click on `routes` menu > click `Edit Routes` > Click `Add Routes` > for destination; 0.0.0.0/0 and target; nat gateway that I created > click `Save Changes`. Repeat the step for B and C. 
 - Associate the Subnet, select the route table > click on `Subnet Associations` >  Click `Edit Subnet Associations` > Pick all of the private subnet in the AZ(db, app and reserved) > Click `Save Association`. Repeat the above steps for other AZ of B and C. If I should ping now, I should be able to connect to the public internet.
+
+### Clean Up account
+- Reverse the process above, like this;
+- Uncheck all the Subnet Association > Delete all the route table > Delete all NAT Gateway(make sure are in deleted state before continue) > Release Elastic IP > Delete the Stack. 
+
+## VPC Gateway Endpoint
+![GW-ENDPOINT](Docs/vpc/gw-end.png)
+- Move to the console and log in as IAM user of the management account, having N. Virginia region selected. I will be using the CFN to deploy the infras where everything is pre-populated. > `Create Stack`
+- Under `Resources` of the just created stack, and from `Physical ID` column, select bucket link. From the S3 bucket console, click on `Upload` > Click `Add files` to choose the particular file > Select `Upload`
+- Creating and implementing gateway endpoint by connecting to the S3 bucket from the VPC without Internet Gateway; from services box, search `EC2` to move to EC2 console > `Running Instance` this is only internal to AWS, to use it right click and hit `Connect` choose `Session Manager` > to verify this does not have internet connectivity, I can ping it with 1.1.1.1 or with `aws s3 ls` command because is private-only instance and don`t have access to any public space endpoints.
+![GW-END](Docs/vpc/gw-end-ping.png)
+From VPC console, > Select `Endpoints` > Click `Create Endpoint` > Supply all required name; `PrivateVPCS3`, category of AWS service, in the service; select .us.east-1.s3, check the box next to gateway, then choose the right VPC, select the right route table, can as well adjust the endpoint policy > Select `Create Endpoint`
+![GW-END](Docs/vpc/gw-end-cr8.png)
+I can verify this works, by returning to the session manager of the instance and perform some operations; `aws s3 cp s3://bucketname/supersecret.txt supersecret.txt` 
+![GW-END](Docs/vpc/gw-end-verify.png)
