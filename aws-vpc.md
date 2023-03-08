@@ -12,6 +12,7 @@ In this DEMO lesson;
 * [VPC Gateway Endpoint](#VPC-Gateway-Endpoint)
 * [VPC Interface Endpoint](#VPC-Interface-Endpoint)
 * [Egress-Only Internet Gateway](#Egress-Only-Internet-Gateway)
+* [VPC Peering](#VPC-Peering)
 
 ## Goals
 In this hands-on I will create an aws VPC for a business, with VPC Subnet, Internet Gateway, Route Tables and Routes. Once the WEB subnets are public, we create a bastion host with public IPv4 addressing and connect to it to test.
@@ -131,7 +132,20 @@ for enable DNS name; `aws sns publish --message "Cats are the best" --phone-numb
 ## Egress-Only Internet Gateway
 - Configure egress-only internet gateway; from VPC console, > Select `Egress-Only Internet Gateways` > Click `Create Egress-Only Internet Gateway` > Supply all required box, name; A4LIPv6, Select the right VPC, click on `Create` and it has associate it with the right VPC. 
 - Next is to configure the route table; from the VPC console, click route tables, select the right VPC(one with secret VPC prefix) > click on `routes` > Click `Edit Routes` > Click on `Add Route` > Adjust the destination ::/0(which ref. all IPv6) and target will be egress-only internet gateway > Click `Save Changes`. If I should ping from the instance now, it should work;
-![INTERFACE-END](Docs/vpc/egress-ping.jpeg)
+![INTERFACE-END](Docs/vpc/egress-ping.png)
 
 ### tidy up the account
 From the VPC console, move to `Endpoint` > select the 2 private endpoint created seperately. Click on Action, choose `Delete VPC endpoint`. Then move to S3 console, pick the right bucket, click on empty, and delete. Move to Egress-only Internet gateway, select the egress gateway created, click on action and choose Delete Egress-Only Internet Gateway and complete the deletion. Finally, move to the cloudformation console, click the stack and delete. Can also tidy up(possible after 24 hours of creation) the SNS console, Select the phone number, Click on `Delete Phone Number` and complete deletion.
+
+## VPC Peering
+![VPCPeering](Docs/vpc/VPCPeering.png)
+- Move to the console and log in as IAM user of the management account, having N. Virginia region selected. I will be using the CFN to implement the infras where everything is pre-populated. > `Create Stack`
+- Create peering connection; move to `EC2` console, each instance running on each of the VPC, click on `Running Instance`. Connect to the instance with session manager, then ping the other instance(copy its private IPv4 address), it wouldnt still work. To retify this, move to VPC console > Click on `Peering Connection` which works by invite and accept architecture > Click `Create Peering Connection` > Supply name; VPCA-VPCB, select VPC-b, my account, same region, VPC-a > Click on `Create Peering connection`
+![VPCPeer-Connect](Docs/vpc/VPCPeer-connt.png)
+
+Next is to accept, select the peering connections > Click `Action` and choose accept request. This help to create a tunnel between the VPCs
+![VPCPeer-Connect](Docs/vpc/vpcpr.png)
+
+- To establish connectivity; by configuring the routing on both side of the VPC. From the VPC console, Click on `Route table` > Select vpc-a > Click on `Routes` > click on `Edit routes` > Click on `Add Route` > for destination; 10.17.0.0/16 and target; peering connection and choose > Click on `Save changes` > Repeat same process for vpc-b(for destination; 10.16.0.0/16). 
+
+Next is to update security group to allowing traffic to and from. Click on `Security group` and select the applicable security groups, check the state of both inbound and outbound rule. Should copy one of the security group ID that is not accessible by SSH, to be use in the other security group by click on `Inbound rule` and Edit, Add rule, then for type; All ICMP - IPv4 and paste in the security group ID(If they are in different region, then specify the IP address or the CIDR range) > Click on `Save rule`
